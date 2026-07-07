@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (logoutBtn) {
     logoutBtn.addEventListener("click", (e) => {
-      // Prevent default anchor navigation so we can stop the music cleanly first.
+
       if (e && typeof e.preventDefault === "function") {
         e.preventDefault();
       }
@@ -25,9 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       localStorage.removeItem("anniversaryMusicState");
-      // Navigate after a short delay to ensure audio state is saved/stopped.
+
       setTimeout(() => {
-        window.location.href = "index.html";
+        window.location.href = "index.php";
       }, 50);
     });
   }

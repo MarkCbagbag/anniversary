@@ -1,0 +1,60 @@
+.profile-select-overlay{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:auto;
+  background:linear-gradient(180deg, rgba(0,0,0,0.0) 40%, rgba(0,0,0,0.35) 100%);
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:26px 18px;
+  opacity:0;
+  transform:translateY(6px);
+  transition:opacity .25s ease, transform .25s ease;
+  pointer-events:none;
+}
+
+.profile-select-overlay.show{opacity:1; transform:translateY(0);}
+
+.profile-select-pill{
+  pointer-events:none;
+  font-weight:600;
+  letter-spacing:.02em;
+  padding:10px 18px;
+  border-radius:999px;
+  background:rgba(255, 95, 163, 0.16);
+  border:1px solid rgba(255, 95, 163, 0.35);
+  color:#ffd1e1;
+  box-shadow:0 14px 40px rgba(255, 95, 163, 0.16);
+  backdrop-filter: blur(10px);
+}
+
+.profile-card:hover .profile-select-overlay{opacity:1;}
+
+.profile-select-overlay.pressed{
+  opacity:1;
+  transform:scale(0.98);
+}
+
+.profile-music-toggle{
+  position:absolute;
+  right:18px;
+  bottom:18px;
+  z-index:50;
+  border-radius:999px;
+  padding:10px 14px;
+  border:1px solid rgba(255,255,255,0.18);
+  background:rgba(0,0,0,0.45);
+  color:#fff;
+  cursor:pointer;
+  backdrop-filter: blur(10px);
+  transition:transform .15s ease, border-color .15s ease, background .15s ease;
+}
+
+.profile-music-toggle:hover{
+  transform:translateY(-1px);
+  border-color: rgba(255, 95, 163, 0.45);
+  background:rgba(255, 95, 163, 0.12);
+}
+

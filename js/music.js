@@ -1,7 +1,15 @@
 (function () {
   const MUSIC_KEY = "anniversaryMusicState";
-  const MUSIC_SRC = "assets/bg-music/Acoustic Guitar x Piano Type Beat _ Pop Instrumental _ _when you so in love_.mp3";
+  const MUSIC_SRC = "assets/bg-music/[FREE] Acoustic Guitar x Piano Type Beat _ Pop Instrumental _ _when you so in love_.mp3";
+  const TOGGLE_SELECTOR = "[data-music-toggle]";
+
+  if (window.__anniversaryMusicBootstrapped) {
+    return;
+  }
+  window.__anniversaryMusicBootstrapped = true;
+
   let audioElement = null;
+  let initialized = false;
 
   function getStoredState() {
     try {
@@ -12,11 +20,10 @@
   }
 
   function saveState() {
-    if (!audioElement) {
-      return;
-    }
+    if (!audioElement) return;
 
     const state = {
+      enabled: audioElement.dataset.enabled !== "false",
       playing: !audioElement.paused,
       currentTime: Number(audioElement.currentTime || 0),
       updatedAt: Date.now()
@@ -25,18 +32,26 @@
     localStorage.setItem(MUSIC_KEY, JSON.stringify(state));
   }
 
+  function syncToggleButtons() {
+    const enabled = Boolean(audioElement && audioElement.dataset.enabled !== "false");
+    document.querySelectorAll(TOGGLE_SELECTOR).forEach((button) => {
+      button.setAttribute("aria-pressed", enabled ? "true" : "false");
+      button.textContent = enabled ? "🎵 Music: ON" : "🔇 Music: OFF";
+      button.classList.toggle("is-off", !enabled);
+    });
+  }
+
   function createAudio() {
-    if (audioElement) {
-      return audioElement;
-    }
+    if (audioElement) return audioElement;
 
     audioElement = document.createElement("audio");
     audioElement.id = "bgMusic";
     audioElement.src = MUSIC_SRC;
     audioElement.loop = true;
     audioElement.preload = "auto";
-    // Start muted to allow autoplay in browsers that block unmuted autoplay.
+    audioElement.autoplay = false;
     audioElement.muted = true;
+    audioElement.dataset.enabled = "true";
     audioElement.style.display = "none";
     audioElement.setAttribute("aria-hidden", "true");
 
@@ -44,8 +59,10 @@
     audioElement.addEventListener("play", saveState);
     audioElement.addEventListener("pause", saveState);
     audioElement.addEventListener("ended", () => {
-      audioElement.currentTime = 0;
-      audioElement.play().catch(() => {});
+      if (audioElement) {
+        audioElement.currentTime = 0;
+        audioElement.play().catch(() => {});
+      }
     });
 
     document.body.appendChild(audioElement);
@@ -58,89 +75,175 @@
 
   function startPlayback() {
     const audio = createAudio();
-    const playPromise = audio.play();
+    if (audio.dataset.enabled === "false") {
+      audio.pause();
+      saveState();
+      syncToggleButtons();
+      return Promise.resolve(false);
+    }
 
+    audio.muted = false;
+    audio.volume = 1;
+
+    const playPromise = audio.play();
     if (playPromise && typeof playPromise.catch === "function") {
       return playPromise
         .then(() => {
           saveState();
+          syncToggleButtons();
           return true;
         })
         .catch(() => {
           saveState();
+          syncToggleButtons();
           return false;
         });
     }
 
     saveState();
+    syncToggleButtons();
     return Promise.resolve(true);
   }
 
   function pausePlayback() {
-    if (!audioElement) {
+    if (!audioElement) return;
+    audioElement.pause();
+    saveState();
+    syncToggleButtons();
+  }
+
+  function setEnabled(enabled) {
+    const audio = createAudio();
+    audio.dataset.enabled = enabled ? "true" : "false";
+    if (!enabled) {
+      audio.pause();
+      saveState();
+      syncToggleButtons();
       return;
     }
 
-    audioElement.pause();
+    audio.muted = false;
+    audio.volume = 1;
+    startPlayback().catch(() => {});
     saveState();
+    syncToggleButtons();
   }
 
   function stopPlayback() {
-    if (!audioElement) {
-      return;
-    }
-
+    if (!audioElement) return;
     audioElement.pause();
     audioElement.currentTime = 0;
     saveState();
+    syncToggleButtons();
+  }
+
+  function unmuteAndEnsurePlaying() {
+    const audio = createAudio();
+
+    if (audio.dataset.enabled === "false") {
+      audio.pause();
+      saveState();
+      syncToggleButtons();
+      return;
+    }
+
+    audio.muted = false;
+    audio.volume = 1;
+
+    if (audio.paused) {
+      const p = startPlayback();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    } else {
+      audio.play().catch(() => {});
+    }
+
+    saveState();
+    syncToggleButtons();
+  }
+
+  function bindToggleButtons() {
+    document.querySelectorAll(TOGGLE_SELECTOR).forEach((button) => {
+      if (button.dataset.musicBound === "1") return;
+      button.dataset.musicBound = "1";
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        const currentEnabled = audioElement ? audioElement.dataset.enabled !== "false" : true;
+        setEnabled(!currentEnabled);
+      });
+    });
   }
 
   function initialize() {
+    if (initialized) return;
+    initialized = true;
+
     const audio = createAudio();
     const state = getStoredState();
+    const enabled = state.enabled === undefined ? true : Boolean(state.enabled);
+    audio.dataset.enabled = enabled ? "true" : "false";
 
     if (state.currentTime) {
-      audio.currentTime = Math.min(Number(state.currentTime), Number(audio.duration || state.currentTime || 0));
+      audio.currentTime = Math.min(
+        Number(state.currentTime),
+        Number(audio.duration || state.currentTime || 0)
+      );
     }
 
-    const tryPlay = () => {
-      if (audio.paused) {
-        startPlayback();
-      }
-    };
-
-    // Attempt to autoplay muted immediately; many browsers allow muted autoplay.
+    syncToggleButtons();
+    bindToggleButtons();
     startPlayback().catch(() => {});
 
-    // On first user gesture, unmute and resume playback so sound becomes audible.
     const onFirstGesture = () => {
-      try {
-        audio.muted = false;
-        audio.play().catch(() => {});
-      } catch (e) {}
-
-      document.removeEventListener("pointerdown", onFirstGesture, { capture: true });
-      document.removeEventListener("keydown", onFirstGesture, { capture: true });
-      document.removeEventListener("touchstart", onFirstGesture, { capture: true });
-      document.removeEventListener("click", onFirstGesture, { capture: true });
+      unmuteAndEnsurePlaying();
+      [
+        "pointerdown",
+        "keydown",
+        "touchstart",
+        "touchend",
+        "click",
+        "mouseup"
+      ].forEach((eventName) => {
+        document.removeEventListener(eventName, onFirstGesture, { capture: true });
+      });
     };
 
-    document.addEventListener("pointerdown", onFirstGesture, { capture: true });
-    document.addEventListener("keydown", onFirstGesture, { capture: true });
-    document.addEventListener("touchstart", onFirstGesture, { capture: true });
-    document.addEventListener("click", onFirstGesture, { capture: true });
+    [
+      "pointerdown",
+      "keydown",
+      "touchstart",
+      "touchend",
+      "click",
+      "mouseup"
+    ].forEach((eventName) => {
+      document.addEventListener(eventName, onFirstGesture, { capture: true });
+    });
+
+    const startButtons = ["startBtn", "loginBtn", "playButton", "logoutBtn"];
+    startButtons.forEach((buttonId) => {
+      const button = document.getElementById(buttonId);
+      if (button) {
+        button.addEventListener("click", () => {
+          unmuteAndEnsurePlaying();
+        });
+      }
+    });
+
+    window.anniversaryMusicPlayAndUnmute = unmuteAndEnsurePlaying;
   }
 
   window.anniversaryMusic = {
     init: initialize,
     play: startPlayback,
     pause: pausePlayback,
-    stop: stopPlayback
+    stop: stopPlayback,
+    setEnabled
   };
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initialize);
+    document.addEventListener("DOMContentLoaded", initialize, { once: true });
   } else {
     initialize();
   }
+
+  window.anniversaryMusicPlayAndUnmute = unmuteAndEnsurePlaying;
 })();

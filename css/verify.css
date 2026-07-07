@@ -120,18 +120,45 @@ color:#E50914;
 
 }
 
-@media(max-width:600px){
+@media (max-width: 700px) {
 
-.verify{
+    .verify {
+        width: min(92%, 460px);
+        padding: 0 10px;
+    }
 
-width:90%;
+    #heart {
+        font-size: 72px;
+    }
 
+    #percent {
+        font-size: 20px;
+    }
+
+    #message {
+        font-size: 16px;
+    }
 }
 
-#welcome h1{
+@media (max-width: 480px) {
 
-font-size:38px;
+    .verify {
+        width: 100%;
+    }
 
-}
+    #heart {
+        font-size: 60px;
+    }
 
+    #percent {
+        font-size: 18px;
+    }
+
+    #message {
+        font-size: 15px;
+    }
+
+    #welcome h1 {
+        font-size: 32px;
+    }
 }

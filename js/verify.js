@@ -68,7 +68,7 @@ welcome.style.display="block";
 
 setTimeout(()=>{
 
-window.location.href="intro.html";
+window.location.replace("intro.php");
 
 },3500);
 

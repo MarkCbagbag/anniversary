@@ -6,18 +6,18 @@ if (player) {
     player.playsInline = true;
 
     player.addEventListener("ended", () => {
-        window.location.href = "profiles.html";
+        window.location.href = "profiles.php";
     });
 
     player.addEventListener("error", () => {
         setTimeout(() => {
-            window.location.href = "profiles.html";
+            window.location.href = "profiles.php";
         }, 3000);
     });
 
     setTimeout(() => {
         if (player.paused && !player.ended) {
-            window.location.href = "profiles.html";
+            window.location.href = "profiles.php";
         }
     }, 7000);
 }

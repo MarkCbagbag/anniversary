@@ -258,33 +258,112 @@ body {
         line-height: 1.7;
     }
 
-@media (max-width: 900px) {
+.music-toggle {
+    position: fixed;
+    right: 18px;
+    top: 18px;
+    z-index: 9999;
+    margin: 0;
+    padding: 10px 16px;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 999px;
+    background: rgba(20,20,20,0.9);
+    color: white;
+    font-size: 0.95rem;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.24);
+    backdrop-filter: blur(12px);
+}
+
+.music-toggle:hover {
+    background: rgba(255,255,255,0.14);
+    transform: translateY(-1px);
+}
+
+.music-toggle.is-off {
+    background: rgba(15,15,15,0.9);
+    border-color: rgba(255,255,255,0.12);
+    color: #f5dede;
+}
+
+@media (max-width: 1080px) {
     .hero {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 32px;
     }
 
     .hero-panel {
         order: -1;
     }
 
-    .season-grid {
-        grid-template-columns: 1fr;
+    .featured-card {
+        padding: 28px;
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 800px) {
     .page-shell {
-        width: calc(100% - 30px);
-        padding: 24px 0 40px;
+        padding: 30px 16px 40px;
+    }
+
+    .hero-copy h1 {
+        font-size: clamp(2.8rem, 7vw, 3.8rem);
     }
 
     .hero-actions {
-        flex-direction: column;
+        width: 100%;
     }
 
     .button {
         width: 100%;
+        justify-content: center;
+    }
+
+    .featured-card {
+        padding: 26px;
+    }
+
+    .music-panel {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 20px;
+    }
+
+    .music-panel p,
+    .music-tag {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 720px) {
+    .hero-copy p {
+        max-width: 100%;
+    }
+
+    .season-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .season-card {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 520px) {
+    .eyebrow {
+        font-size: 0.75rem;
+    }
+
+    .hero-copy h1 {
+        font-size: 2.6rem;
+    }
+
+    .button {
+        padding: 14px 20px;
+        width: 100%;
+    }
+
+    .hero-actions {
+        flex-direction: column;
     }
 
     .music-panel {

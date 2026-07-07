@@ -45,7 +45,7 @@ function enterHome() {
     const stage = document.querySelector('.profile-stage');
     stage.classList.add('fade-out-stage');
     window.setTimeout(() => {
-        window.location.href = 'home.html';
+        window.location.href = 'home.php';
     }, 1000);
 }
 
