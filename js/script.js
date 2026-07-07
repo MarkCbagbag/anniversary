@@ -27,7 +27,7 @@ document.getElementById("loginBtn").onclick = () => {
 
     // CHANGE THESE
     const girlfriend = "kimmy";
-    const anniversary = "2023";
+    const anniversary = "20230";
 
     if(name === girlfriend && date === anniversary){
 
