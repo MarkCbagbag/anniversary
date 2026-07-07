@@ -3,6 +3,7 @@ $pageTitle = 'Our Story ❤️';
 $bodyClass = 'landing-page';
 $extraStyles = ['css/style.css'];
 $extraScriptsFooter = ['js/script.js'];
+$showMusicToggle = true;
 
 $loginError = '';
 $loveValue = '';

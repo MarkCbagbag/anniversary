@@ -53,6 +53,9 @@
     const root = stage();
     if (!root) return;
 
+    // Only create the profile music toggle when the site intends to show music controls.
+    if (document.body && document.body.dataset && document.body.dataset.musicVisible !== '1') return;
+
     if (document.getElementById('profileMusicToggle')) return;
 
     const toggle = document.createElement('button');

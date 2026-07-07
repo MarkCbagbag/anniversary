@@ -28,5 +28,7 @@ if (!isset($extraScriptsHead)) {
         <script src="<?= htmlspecialchars($script) ?>" defer></script>
     <?php endforeach; ?>
 </head>
-<body class="<?= htmlspecialchars($bodyClass) ?>">
-<button id="musicToggle" type="button" class="music-toggle" data-music-toggle aria-pressed="true">🎵 Music: ON</button>
+<body class="<?= htmlspecialchars($bodyClass) ?>" data-music-visible="<?= (isset($showMusicToggle) && $showMusicToggle) ? '1' : '0' ?>">
+<?php if (!empty($showMusicToggle)) : ?>
+    <button id="musicToggle" type="button" class="music-toggle" data-music-toggle aria-pressed="true">🎵 Music: ON</button>
+<?php endif; ?>

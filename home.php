@@ -3,6 +3,7 @@ $pageTitle = 'Anniversary Streaming';
 $bodyClass = 'home-page';
 $extraStyles = ['css/home.css'];
 $extraScriptsFooter = ['js/home.js'];
+$showMusicToggle = true;
 include __DIR__ . '/partials/header.php';
 ?>
 
