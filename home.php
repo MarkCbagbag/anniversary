@@ -4,6 +4,8 @@ $bodyClass = 'home-page';
 $extraStyles = ['css/home.css'];
 $extraScriptsFooter = ['js/home.js'];
 $showMusicToggle = true;
+// Home should not show the page background
+$showBackground = false;
 include __DIR__ . '/partials/header.php';
 ?>
 

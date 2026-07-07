@@ -4,6 +4,8 @@ $bodyClass = 'landing-page';
 $extraStyles = ['css/style.css'];
 $extraScriptsFooter = ['js/script.js'];
 $showMusicToggle = true;
+// Index should not show the page background
+$showBackground = false;
 
 $loginError = '';
 $loveValue = '';
