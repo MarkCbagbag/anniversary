@@ -1,7 +1,5 @@
 (function () {
-  const MUSIC_KEY = "anniversaryMusicState";
   const MUSIC_SRC = "assets/bg-music/[FREE] Acoustic Guitar x Piano Type Beat _ Pop Instrumental _ _when you so in love_.mp3";
-  const TOGGLE_SELECTOR = "[data-music-toggle]";
 
   if (window.__anniversaryMusicBootstrapped) {
     return;
@@ -10,10 +8,11 @@
 
   let audioElement = null;
   let initialized = false;
+  let manuallyPaused = false; // true when user intentionally stopped music
 
   function getStoredState() {
     try {
-      return JSON.parse(localStorage.getItem(MUSIC_KEY) || "{}") || {};
+      return JSON.parse(localStorage.getItem("anniversaryMusicState") || "{}") || {};
     } catch (error) {
       return {};
     }
@@ -21,24 +20,12 @@
 
   function saveState() {
     if (!audioElement) return;
-
     const state = {
-      enabled: audioElement.dataset.enabled !== "false",
       playing: !audioElement.paused,
       currentTime: Number(audioElement.currentTime || 0),
       updatedAt: Date.now()
     };
-
-    localStorage.setItem(MUSIC_KEY, JSON.stringify(state));
-  }
-
-  function syncToggleButtons() {
-    const enabled = Boolean(audioElement && audioElement.dataset.enabled !== "false");
-    document.querySelectorAll(TOGGLE_SELECTOR).forEach((button) => {
-      button.setAttribute("aria-pressed", enabled ? "true" : "false");
-      button.textContent = enabled ? "🎵 Music: ON" : "🔇 Music: OFF";
-      button.classList.toggle("is-off", !enabled);
-    });
+    localStorage.setItem("anniversaryMusicState", JSON.stringify(state));
   }
 
   function createAudio() {
@@ -50,8 +37,8 @@
     audioElement.loop = true;
     audioElement.preload = "auto";
     audioElement.autoplay = false;
-    audioElement.muted = true;
-    audioElement.dataset.enabled = "true";
+    audioElement.muted = false;
+    audioElement.volume = 1;
     audioElement.style.display = "none";
     audioElement.setAttribute("aria-hidden", "true");
 
@@ -59,9 +46,9 @@
     audioElement.addEventListener("play", saveState);
     audioElement.addEventListener("pause", saveState);
     audioElement.addEventListener("ended", () => {
-      if (audioElement) {
+      if (audioElement && !manuallyPaused) {
         audioElement.currentTime = 0;
-        audioElement.play().catch(() => {});
+        audioElement.play().catch(function () {});
       }
     });
 
@@ -75,12 +62,7 @@
 
   function startPlayback() {
     const audio = createAudio();
-    if (audio.dataset.enabled === "false") {
-      audio.pause();
-      saveState();
-      syncToggleButtons();
-      return Promise.resolve(false);
-    }
+    if (manuallyPaused) return Promise.resolve(false);
 
     audio.muted = false;
     audio.volume = 1;
@@ -88,20 +70,17 @@
     const playPromise = audio.play();
     if (playPromise && typeof playPromise.catch === "function") {
       return playPromise
-        .then(() => {
+        .then(function () {
           saveState();
-          syncToggleButtons();
           return true;
         })
-        .catch(() => {
+        .catch(function () {
           saveState();
-          syncToggleButtons();
           return false;
         });
     }
 
     saveState();
-    syncToggleButtons();
     return Promise.resolve(true);
   }
 
@@ -109,24 +88,15 @@
     if (!audioElement) return;
     audioElement.pause();
     saveState();
-    syncToggleButtons();
   }
 
-  function setEnabled(enabled) {
-    const audio = createAudio();
-    audio.dataset.enabled = enabled ? "true" : "false";
-    if (!enabled) {
-      audio.pause();
-      saveState();
-      syncToggleButtons();
-      return;
-    }
-
-    audio.muted = false;
-    audio.volume = 1;
-    startPlayback().catch(() => {});
+  function resumePlayback() {
+    if (!audioElement) return;
+    if (manuallyPaused) return;
+    audioElement.muted = false;
+    audioElement.volume = 1;
+    audioElement.play().catch(function () {});
     saveState();
-    syncToggleButtons();
   }
 
   function stopPlayback() {
@@ -134,16 +104,13 @@
     audioElement.pause();
     audioElement.currentTime = 0;
     saveState();
-    syncToggleButtons();
   }
 
-  function unmuteAndEnsurePlaying() {
+  function ensurePlaying() {
     const audio = createAudio();
-
-    if (audio.dataset.enabled === "false") {
+    if (manuallyPaused) {
       audio.pause();
       saveState();
-      syncToggleButtons();
       return;
     }
 
@@ -151,26 +118,12 @@
     audio.volume = 1;
 
     if (audio.paused) {
-      const p = startPlayback();
-      if (p && typeof p.catch === "function") p.catch(() => {});
+      startPlayback().catch(function () {});
     } else {
-      audio.play().catch(() => {});
+      audio.play().catch(function () {});
     }
 
     saveState();
-    syncToggleButtons();
-  }
-
-  function bindToggleButtons() {
-    document.querySelectorAll(TOGGLE_SELECTOR).forEach((button) => {
-      if (button.dataset.musicBound === "1") return;
-      button.dataset.musicBound = "1";
-      button.addEventListener("click", (event) => {
-        event.preventDefault();
-        const currentEnabled = audioElement ? audioElement.dataset.enabled !== "false" : true;
-        setEnabled(!currentEnabled);
-      });
-    });
   }
 
   function initialize() {
@@ -179,8 +132,6 @@
 
     const audio = createAudio();
     const state = getStoredState();
-    const enabled = state.enabled === undefined ? true : Boolean(state.enabled);
-    audio.dataset.enabled = enabled ? "true" : "false";
 
     if (state.currentTime) {
       audio.currentTime = Math.min(
@@ -189,54 +140,48 @@
       );
     }
 
-    syncToggleButtons();
-    bindToggleButtons();
-    startPlayback().catch(() => {});
+    startPlayback().catch(function () {});
 
-    const onFirstGesture = () => {
-      unmuteAndEnsurePlaying();
+    // Resume on first user gesture (browser autoplay policy)
+    var onFirstGesture = function () {
+      ensurePlaying();
       [
-        "pointerdown",
-        "keydown",
-        "touchstart",
-        "touchend",
-        "click",
-        "mouseup"
-      ].forEach((eventName) => {
+        "pointerdown", "keydown", "touchstart", "touchend", "click", "mouseup"
+      ].forEach(function (eventName) {
         document.removeEventListener(eventName, onFirstGesture, { capture: true });
       });
     };
 
     [
-      "pointerdown",
-      "keydown",
-      "touchstart",
-      "touchend",
-      "click",
-      "mouseup"
-    ].forEach((eventName) => {
+      "pointerdown", "keydown", "touchstart", "touchend", "click", "mouseup"
+    ].forEach(function (eventName) {
       document.addEventListener(eventName, onFirstGesture, { capture: true });
     });
 
-    const startButtons = ["startBtn", "loginBtn", "playButton", "logoutBtn"];
-    startButtons.forEach((buttonId) => {
-      const button = document.getElementById(buttonId);
+    // Also resume on any button click
+    var buttons = ["startBtn", "loginBtn", "playButton", "logoutBtn"];
+    buttons.forEach(function (buttonId) {
+      var button = document.getElementById(buttonId);
       if (button) {
-        button.addEventListener("click", () => {
-          unmuteAndEnsurePlaying();
+        button.addEventListener("click", function () {
+          ensurePlaying();
         });
       }
     });
 
-    window.anniversaryMusicPlayAndUnmute = unmuteAndEnsurePlaying;
+    window.anniversaryMusicPlayAndUnmute = ensurePlaying;
   }
 
   window.anniversaryMusic = {
     init: initialize,
     play: startPlayback,
     pause: pausePlayback,
+    resume: resumePlayback,
     stop: stopPlayback,
-    setEnabled
+    ensurePlaying: ensurePlaying,
+    isPaused: function () {
+      return audioElement ? audioElement.paused : true;
+    }
   };
 
   if (document.readyState === "loading") {
@@ -245,5 +190,5 @@
     initialize();
   }
 
-  window.anniversaryMusicPlayAndUnmute = unmuteAndEnsurePlaying;
+  window.anniversaryMusicPlayAndUnmute = ensurePlaying;
 })();

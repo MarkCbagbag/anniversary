@@ -187,6 +187,27 @@ button:hover{
     color: #f5dede;
 }
 
+/* Site-wide background for pages that opt in via body.with-background */
+body.with-background::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: url("https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=1920&auto=format&fit=crop") center center/cover no-repeat;
+    filter: brightness(.34);
+    pointer-events: none;
+}
+
+/* Slight overlay to match site look */
+body.with-background::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(to top, rgba(0,0,0,0.35), rgba(0,0,0,0.15));
+    pointer-events: none;
+}
+
 .mini-slider{
     margin: 32px auto 0;
     width: min(480px, 90vw);
@@ -311,6 +332,36 @@ button:hover{
 
     font-size:16px;
 
+}
+
+.password-field {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.password-field input {
+    margin-bottom: 0;
+    padding-right: 90px;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    margin: 0;
+    padding: 7px 10px;
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.08);
+    color: #ffd5e1;
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+}
+
+.login-card .password-toggle:hover {
+    background: rgba(255,255,255,0.16);
+    transform: translateY(-50%) scale(1.02);
 }
 
 .login-card input:focus{

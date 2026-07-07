@@ -1,4 +1,6 @@
 <?php
+session_start();
+$_SESSION['authenticated'] = true;
 $pageTitle = 'Verifying...';
 $bodyClass = 'verify-page';
 $extraStyles = ['css/verify.css'];

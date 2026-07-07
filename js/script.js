@@ -1,38 +1,40 @@
 const intro = document.getElementById("intro");
 const login = document.getElementById("login");
+const startBtn = document.getElementById("startBtn");
 
-document.getElementById("startBtn").onclick = () => {
-    intro.style.opacity = "0";
-
-    setTimeout(() => {
-        intro.style.display = "none";
-        login.style.opacity = "1";
-        login.style.pointerEvents = "auto";
-    }, 900);
-};
-
-document.getElementById("loginBtn").onclick = () => {
-    const name = document.getElementById("love").value.trim().toLowerCase();
-    const date = document.getElementById("date").value.trim();
-    const error = document.getElementById("error");
-
-
-    const girlfriend = "kimmy";
-    const anniversary = "2023";
-
-    if (name === girlfriend && date === anniversary) {
-        error.style.color = "#8cff8c";
-        error.innerHTML = "❤️ Identity Confirmed...";
+if (startBtn) {
+    startBtn.addEventListener("click", () => {
+        intro.style.opacity = "0";
 
         setTimeout(() => {
-            window.location.href = "verify.php";
-        }, 1800);
-    } else {
-        error.style.color = "#ff7373";
-        error.innerHTML = "That's not quite right... ❤️ Try again.";
-    }
-};
+            intro.style.display = "none";
+            login.style.opacity = "1";
+            login.style.pointerEvents = "auto";
+        }, 900);
+    });
+}
 
+const loginForm = document.querySelector("#login form");
+if (loginForm) {
+    loginForm.addEventListener("submit", (event) => {
+        const name = document.getElementById("love")?.value.trim().toLowerCase() || "";
+        const date = document.getElementById("date")?.value.trim() || "";
+        const error = document.getElementById("error");
+        const girlfriend = "kimmy";
+        const anniversary = "2023";
+
+        if (name !== girlfriend || date !== anniversary) {
+            event.preventDefault();
+            if (error) {
+                error.style.color = "#ff7373";
+                error.innerHTML = "That's not quite right... ❤️ Try again.";
+            }
+        } else if (error) {
+            error.style.color = "#8cff8c";
+            error.innerHTML = "❤️ Identity Confirmed...";
+        }
+    });
+}
 
 (() => {
     const backBtn = document.getElementById("backBtn");
@@ -59,6 +61,21 @@ document.getElementById("loginBtn").onclick = () => {
 })();
 
 
+
+(() => {
+    document.querySelectorAll(".password-toggle").forEach((button) => {
+        button.addEventListener("click", () => {
+            const targetId = button.getAttribute("data-target");
+            const input = document.getElementById(targetId);
+            if (!input) return;
+
+            const isPassword = input.type === "password";
+            input.type = isPassword ? "text" : "password";
+            button.textContent = isPassword ? "Hide" : "Show";
+            button.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+        });
+    });
+})();
 
 (() => {
     const sliderRoot = document.querySelector(".mini-slider");

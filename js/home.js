@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (logoutBtn) {
     logoutBtn.addEventListener("click", (e) => {
-
       if (e && typeof e.preventDefault === "function") {
         e.preventDefault();
       }
@@ -25,10 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       localStorage.removeItem("anniversaryMusicState");
-
-      setTimeout(() => {
-        window.location.href = "index.php";
-      }, 50);
+      window.location.href = logoutBtn.getAttribute("href");
     });
   }
 });

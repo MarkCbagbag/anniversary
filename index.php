@@ -1,13 +1,28 @@
 <?php
+session_start();
+
+if (empty($_SESSION['login_attempts'])) {
+    $_SESSION['login_attempts'] = 0;
+}
+if (empty($_SESSION['login_lock_until'])) {
+    $_SESSION['login_lock_until'] = 0;
+}
+
+$now = time();
+if ((int) $_SESSION['login_lock_until'] > $now) {
+    $loginError = 'Too many failed attempts. Please wait a moment and try again.';
+} else {
+    $_SESSION['login_lock_until'] = 0;
+}
+
 $pageTitle = 'Our Story ❤️';
 $bodyClass = 'landing-page';
 $extraStyles = ['css/style.css'];
 $extraScriptsFooter = ['js/script.js'];
-$showMusicToggle = true;
 // Index should not show the page background
 $showBackground = false;
 
-$loginError = '';
+$loginError = $loginError ?? '';
 $loveValue = '';
 $dateValue = '';
 
@@ -17,12 +32,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $expectedName = 'kimmy';
     $expectedDate = '2023';
 
-    if (strcasecmp($loveValue, $expectedName) === 0 && $dateValue === $expectedDate) {
+    if ((int) $_SESSION['login_lock_until'] > $now) {
+        $loginError = 'Too many failed attempts. Please wait a moment and try again.';
+    } elseif (strcasecmp($loveValue, $expectedName) === 0 && $dateValue === $expectedDate) {
+        session_regenerate_id(true);
+        $_SESSION['authenticated'] = true;
+        $_SESSION['profile_name'] = 'Kimmy';
+        $_SESSION['login_attempts'] = 0;
+        $_SESSION['login_lock_until'] = 0;
         header('Location: verify.php');
         exit;
-    }
+    } else {
+        $_SESSION['login_attempts'] = (int) $_SESSION['login_attempts'] + 1;
 
-    $loginError = "That's not quite right... ❤️ Try again.";
+        if ((int) $_SESSION['login_attempts'] >= 3) {
+            $_SESSION['login_lock_until'] = $now + 20;
+            $loginError = 'Too many failed attempts. Please wait 20 seconds and try again.';
+        } else {
+            $loginError = "That's not quite right... ❤️ Try again.";
+        }
+    }
 }
 
 include __DIR__ . '/partials/header.php';
@@ -69,7 +98,10 @@ include __DIR__ . '/partials/header.php';
         <h2>Unlock Our Story ❤️</h2>
         <form method="post" action="index.php">
             <input type="text" name="love" id="love" placeholder="Who is the love of my life?" value="<?= htmlspecialchars($loveValue) ?>" required>
-            <input type="password" name="date" id="date" placeholder="When did our story begin? (MMDDYYYY)" value="<?= htmlspecialchars($dateValue) ?>" required>
+            <div class="password-field">
+                <input type="password" name="date" id="date" placeholder="When did our story begin? (MMDDYYYY)" value="<?= htmlspecialchars($dateValue) ?>" required>
+                <button type="button" class="password-toggle" data-target="date" aria-label="Show password">Show</button>
+            </div>
             <button id="loginBtn" type="submit">❤️ Unlock ❤️</button>
         </form>
         <p id="error"><?= htmlspecialchars($loginError) ?></p>
@@ -77,4 +109,3 @@ include __DIR__ . '/partials/header.php';
 </section>
 
 <?php include __DIR__ . '/partials/footer.php'; ?>
-

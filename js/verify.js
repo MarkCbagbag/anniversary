@@ -68,7 +68,7 @@ welcome.style.display="block";
 
 setTimeout(()=>{
 
-window.location.replace("intro.php");
+window.location.replace("quiz.php");
 
 },3500);
 
