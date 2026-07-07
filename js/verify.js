@@ -24,6 +24,8 @@ const messages=[
 
 ];
 
+message.innerHTML = messages[0];
+
 const timer=setInterval(()=>{
 
 p++;
@@ -66,7 +68,7 @@ welcome.style.display="block";
 
 setTimeout(()=>{
 
-window.location.href="home.html";
+window.location.href="intro.html";
 
 },3500);
 

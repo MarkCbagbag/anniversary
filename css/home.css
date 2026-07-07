@@ -1,0 +1,310 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+:root {
+    --bg: #07070b;
+    --surface: rgba(255, 255, 255, 0.06);
+    --surface-strong: rgba(255, 255, 255, 0.1);
+    --text: #f8f8fc;
+    --muted: #bdb8d3;
+    --accent: #ff5fa3;
+    --accent-soft: rgba(255, 95, 163, 0.2);
+}
+
+body {
+    background: radial-gradient(circle at top left, rgba(255, 95, 163, 0.16), transparent 25%),
+        radial-gradient(circle at bottom right, rgba(70, 30, 150, 0.22), transparent 24%),
+        linear-gradient(180deg, #09090f 0%, #0f1020 100%);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+.page-shell {
+    width: min(1180px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 40px 0 60px;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 40px;
+    align-items: center;
+    margin-bottom: 60px;
+}
+
+.eyebrow {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+}
+
+.hero-copy h1 {
+    font-size: clamp(3.2rem, 5vw, 4.8rem);
+    line-height: 0.95;
+    margin-bottom: 20px;
+}
+
+.hero-copy p {
+    max-width: 560px;
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.8;
+    margin-bottom: 32px;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.button {
+    border: none;
+    border-radius: 999px;
+    padding: 16px 26px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.button:hover {
+    transform: translateY(-2px);
+}
+
+.button-primary {
+    background: linear-gradient(135deg, #ff5fa3, #ff2a63);
+    color: white;
+    box-shadow: 0 20px 60px rgba(255, 95, 163, 0.24);
+}
+
+.button-secondary,
+.button-music {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.hero-panel {
+    position: relative;
+}
+
+.featured-card {
+    position: relative;
+    padding: 36px;
+    border-radius: 32px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 35px 80px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(16px);
+}
+
+.featured-card::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255, 95, 163, 0.22), transparent 55%);
+    opacity: 0.75;
+    filter: blur(14px);
+    pointer-events: none;
+}
+
+.featured-card .badge {
+    display: inline-flex;
+    margin-bottom: 18px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: rgba(255, 95, 163, 0.16);
+    color: #ffb7d5;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.featured-card h2 {
+    font-size: 2rem;
+    margin-bottom: 16px;
+}
+
+.featured-card p {
+    color: var(--muted);
+    line-height: 1.85;
+    margin-bottom: 28px;
+}
+
+.featured-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.featured-stats div {
+    min-width: 90px;
+}
+
+.featured-stats strong {
+    font-size: 1.7rem;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.featured-stats span {
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.seasons {
+    margin-top: 30px;
+}
+
+.seasons h2 {
+    font-size: 2rem;
+    margin-bottom: 24px;
+}
+
+.season-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.season-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.season-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 95, 163, 0.32);
+}
+
+.season-card.active {
+    border-color: rgba(255, 95, 163, 0.6);
+    box-shadow: 0 25px 60px rgba(255, 95, 163, 0.15);
+}
+
+.season-tag {
+    display: inline-flex;
+    margin-bottom: 18px;
+    color: #ffb7d5;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.85rem;
+}
+
+.season-card h3 {
+    font-size: 1.65rem;
+    margin-bottom: 14px;
+}
+
+.season-card p {
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 24px;
+}
+
+.season-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--accent);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.music-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 60px;
+    padding: 28px;
+    border-radius: 26px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+}
+
+.music-panel h3 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+}
+
+.music-panel p {
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.7;
+}
+
+    .music-tag {
+        color: rgba(255, 255, 255, 0.72);
+        font-size: 0.98rem;
+        max-width: 320px;
+        line-height: 1.7;
+    }
+
+@media (max-width: 900px) {
+    .hero {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .hero-panel {
+        order: -1;
+    }
+
+    .season-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .page-shell {
+        width: calc(100% - 30px);
+        padding: 24px 0 40px;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+    }
+
+    .button {
+        width: 100%;
+    }
+
+    .music-panel {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+    }
+}
+
+.button-secondary {
+  background-color: #f44336; /* red */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.button-secondary:hover {
+  background-color: #d32f2f;
+}

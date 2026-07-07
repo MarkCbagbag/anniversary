@@ -7,8 +7,9 @@
 
 body{
     background:#000;
-    overflow:hidden;
     color:white;
+    /* allow scrolling on small devices */
+    overflow:auto;
 }
 
 /* Background */
